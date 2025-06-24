@@ -1,0 +1,135 @@
+version: '3.8'
+
+services:
+  spark-master:
+    image: aaditya-spark-image
+    container_name: master
+    environment:
+      - SPARK_MODE=master
+    ports:
+    - "7077:7077"
+    - "8080:8080"
+
+    networks:
+      - sparknetwork
+
+
+  spark-worker1:
+    image: aaditya-spark-image
+    container_name: worker1
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER=spark://master:7077
+
+    networks:
+      - sparknetwork
+
+  spark-worker2:
+    image: aaditya-spark-image
+    container_name: worker2
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER=spark://master:7077
+
+    networks:
+      - sparknetwork
+
+  spark-worker3:
+    image: aaditya-spark-image
+    container_name: worker3
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER=spark://master:7077
+
+    networks:
+      - sparknetwork
+
+
+
+  client:
+    image: aaditya-spark-image
+    container_name: client
+    restart: always
+    ports:
+      - 8888:8888
+      - 4040:4040
+    entrypoint: jupyter lab --ip=0.0.0.0 --port=8888 --allow-root
+    
+
+    networks:
+      - sparknetwork
+
+
+  cf-zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.0
+    container_name: cf-zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+    networks:
+      - sparknetwork
+
+  cf-kafka-1:
+    image: confluentinc/cp-kafka:7.4.0
+    container_name: cf-kafka-1
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: cf-zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://cf-kafka-1:9092
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    depends_on:
+      - cf-zookeeper
+    networks:
+      - sparknetwork
+
+  cf-kafka-2:
+    image: confluentinc/cp-kafka:7.4.0
+    container_name: cf-kafka-2
+    ports:
+      - "9093:9093"
+      - "29093:29093"
+    environment:
+      KAFKA_BROKER_ID: 2
+      KAFKA_ZOOKEEPER_CONNECT: cf-zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://cf-kafka-2:9093
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    depends_on:
+      - cf-zookeeper
+    networks:
+      - sparknetwork
+
+  cf-kafka-3:
+    image: confluentinc/cp-kafka:7.4.0
+    container_name: cf-kafka-3
+    ports:
+      - "9094:9094"
+      - "29094:29094"
+    environment:
+      KAFKA_BROKER_ID: 3
+      KAFKA_ZOOKEEPER_CONNECT: cf-zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://cf-kafka-3:9094
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9094
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    depends_on:
+      - cf-zookeeper
+    networks:
+      - sparknetwork
+
+
+networks:
+  sparknetwork:
+    name: sparknetwork
+    driver: bridge
+
+  
+
+  
+
