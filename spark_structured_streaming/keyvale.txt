@@ -1,0 +1,23 @@
+1.key is ('hello',) 
+2.value is [    word
+0  hello
+1  hello
+2  hello
+3  hello]
+ 3.type of iterator is <class 'list'>1.key is ('aaditya',) 
+2.value is [      word
+0  aaditya]
+ 3.type of iterator is <class 'list'>1.key is ('hi',) 
+2.value is [  word
+0   hi
+1   hi
+2   hi
+3   hi
+4   hi
+5   hi]
+ 3.type of iterator is <class 'list'>
+
+
+input was 
+
+hello hi hi hello hi hi hello hi hi hello aaditya
